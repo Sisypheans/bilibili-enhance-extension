@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "B站功能增强",
+  "version": "2.7.0",
+  "description": "B站视频功能增强：弹幕自动跳过+自动点赞、自动连播、开头跳过、结尾跳过",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "B站功能增强"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://api.bilibili.com/*",
+    "https://www.bilibili.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://www.bilibili.com/video/*",
+        "*://www.bilibili.com/bangumi/play/*",
+        "*://www.bilibili.com/list/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_end",
+      "css": []
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [],
+      "matches": ["*://www.bilibili.com/*"]
+    }
+  ]
+}

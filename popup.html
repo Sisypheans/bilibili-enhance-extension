@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B站功能增强</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <img src="icons/icon48.png" alt="logo" class="logo-img">
+            </div>
+            <div class="title-area">
+                <h1 class="title">B站功能增强</h1>
+                <span class="version">v2.7.0</span>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="basic">基础功能</button>
+            <button class="tab-btn" data-tab="danmaku">弹幕跳过</button>
+            <button class="tab-btn" data-tab="rules">关键词规则</button>
+            <button class="tab-btn" data-tab="advanced">高级设置</button>
+        </div>
+
+        <!-- 基础功能 -->
+        <div class="tab-content active" id="tab-basic">
+            <div class="section">
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-icon danmaku-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M2 6C2 4.89543 2.89543 4 4 4H16C17.1046 4 18 4.89543 18 6V14C18 15.1046 17.1046 16 16 16H4C2.89543 16 2 15.1046 2 14V6Z" fill="#fb7299"/>
+                                <path d="M7 7L13 10L7 13V7Z" fill="white"/>
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <span class="feature-name">弹幕自动跳过</span>
+                            <span class="feature-desc">识别弹幕中的空降提示，自动跳过</span>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="danmakuSkipEnabled">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M10 2C10.5523 2 11 2.44772 11 3V9H17C17.5523 9 18 9.44772 18 10C18 10.5523 17.5523 11 17 11H11V17C11 17.5523 10.5523 18 10 18C9.44772 18 9 17.5523 9 17V11H3C2.44772 11 2 10.5523 2 10C2 9.44772 2.44772 9 3 9H9V3C9 2.44772 9.44772 2 10 2Z" fill="#61666D"/>
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <span class="feature-name">自动连播</span>
+                            <span class="feature-desc">视频结束后自动播放下一个</span>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="autoPlay">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M6 4L14 10L6 16V4Z" fill="#61666D"/>
+                                <rect x="2" y="4" width="2" height="12" rx="1" fill="#61666D"/>
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <span class="feature-name">开头跳过</span>
+                            <span class="feature-desc">视频开始时自动跳过片头</span>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="skipStart">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="sub-setting" id="skipStartSetting">
+                    <div class="time-input-row">
+                        <div class="time-input-group">
+                            <input type="number" id="skipStartMin" min="0" value="0" class="time-input">
+                            <span class="time-unit">分</span>
+                        </div>
+                        <div class="time-input-group">
+                            <input type="number" id="skipStartSecInput" min="0" value="0" class="time-input">
+                            <span class="time-unit">秒</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-icon">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M14 4L6 10L14 16V4Z" fill="#61666D"/>
+                                <rect x="16" y="4" width="2" height="12" rx="1" fill="#61666D"/>
+                            </svg>
+                        </div>
+                        <div class="feature-text">
+                            <span class="feature-name">结尾跳过</span>
+                            <span class="feature-desc">接近结尾时自动跳下一个视频</span>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="skipEnd">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="sub-setting" id="skipEndSetting">
+                    <div class="time-input-row">
+                        <div class="time-input-group">
+                            <input type="number" id="skipEndMin" min="0" value="0" class="time-input">
+                            <span class="time-unit">分</span>
+                        </div>
+                        <div class="time-input-group">
+                            <input type="number" id="skipEndSecInput" min="0" value="0" class="time-input">
+                            <span class="time-unit">秒</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 弹幕跳过 -->
+        <div class="tab-content" id="tab-danmaku">
+            <div class="section">
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-text">
+                            <span class="feature-name">跳过通知</span>
+                            <span class="feature-desc">跳过时显示顶部通知条</span>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="danmakuSkipNotify">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-text">
+                            <span class="feature-name">自动点赞</span>
+                            <span class="feature-desc">对匹配的空降弹幕自动点赞</span>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="danmakuAutoLike">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">跳过参数</h3>
+                <div class="stepper-row">
+                    <span class="stepper-label">跳转起点延后<i class="help-icon" title="实际跳转时间 = 弹幕目标时间 + 该值">?</i></span>
+                    <div class="stepper">
+                        <button class="stepper-btn" data-action="dec" data-target="skipMarginStart">−</button>
+                        <input type="text" id="skipMarginStart" readonly value="3">
+                        <button class="stepper-btn" data-action="inc" data-target="skipMarginStart">+</button>
+                    </div>
+                    <span class="stepper-unit">秒</span>
+                </div>
+                <div class="stepper-row">
+                    <span class="stepper-label">跳转终点提前<i class="help-icon" title="实际跳转时间 = 弹幕目标时间 - 该值">?</i></span>
+                    <div class="stepper">
+                        <button class="stepper-btn" data-action="dec" data-target="skipMarginEnd">−</button>
+                        <input type="text" id="skipMarginEnd" readonly value="3">
+                        <button class="stepper-btn" data-action="inc" data-target="skipMarginEnd">+</button>
+                    </div>
+                    <span class="stepper-unit">秒</span>
+                </div>
+                <div class="stepper-row">
+                    <span class="stepper-label">最短跳过时长<i class="help-icon" title="少于这个秒数的跳过操作不执行，时间太短的跳过意义不大">?</i></span>
+                    <div class="stepper">
+                        <button class="stepper-btn" data-action="dec" data-target="minSkipDuration">−</button>
+                        <input type="text" id="minSkipDuration" readonly value="5">
+                        <button class="stepper-btn" data-action="inc" data-target="minSkipDuration">+</button>
+                    </div>
+                    <span class="stepper-unit">秒</span>
+                </div>
+                <div class="stepper-row">
+                    <span class="stepper-label">弹幕最大长度<i class="help-icon" title="超过这个字符数的弹幕不参与匹配，太长的弹幕通常不是空降弹幕">?</i></span>
+                    <div class="stepper">
+                        <button class="stepper-btn" data-action="dec" data-target="maxDanmakuLength">−</button>
+                        <input type="text" id="maxDanmakuLength" readonly value="20">
+                        <button class="stepper-btn" data-action="inc" data-target="maxDanmakuLength">+</button>
+                    </div>
+                    <span class="stepper-unit">字</span>
+                </div>
+                <div class="stepper-row">
+                    <span class="stepper-label">右键快进秒数<i class="help-icon" title="右键点击空降弹幕时，每次点击跳过的秒数，连续点击累计">?</i></span>
+                    <div class="stepper">
+                        <button class="stepper-btn" data-action="dec" data-target="secondsPerRightClick">−</button>
+                        <input type="text" id="secondsPerRightClick" readonly value="5">
+                        <button class="stepper-btn" data-action="inc" data-target="secondsPerRightClick">+</button>
+                    </div>
+                    <span class="stepper-unit">秒</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 关键词规则 -->
+        <div class="tab-content" id="tab-rules">
+            <div class="section">
+                <div class="rules-header">
+                    <h3 class="section-title">匹配规则列表</h3>
+                    <button class="btn btn-primary" id="addRuleBtn">+ 添加规则</button>
+                </div>
+                <div id="rulesList" class="rules-list"></div>
+            </div>
+        </div>
+
+        <!-- 高级设置 -->
+        <div class="tab-content" id="tab-advanced">
+            <div class="section">
+                <div class="feature-row">
+                    <div class="feature-info">
+                        <div class="feature-text">
+                            <span class="feature-name">调试模式</span>
+                            <span class="feature-desc">在控制台输出详细日志</span>
+                        </div>
+                    </div>
+                    <label class="switch">
+                        <input type="checkbox" id="debug">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">分组容差<i class="help-icon" title="将多条相似的空降弹幕合并为一组，取出现次数最多的目标时间作为跳转依据，避免误跳">?</i></h3>
+                <div class="stepper-row">
+                    <span class="stepper-label">发送时间接近容差<i class="help-icon" title="多条弹幕的发送时间相差在这个范围内，会被视为同一组弹幕一起处理">?</i></span>
+                    <div class="stepper">
+                        <button class="stepper-btn" data-action="dec" data-target="groupFromTolerance">−</button>
+                        <input type="text" id="groupFromTolerance" readonly value="5">
+                        <button class="stepper-btn" data-action="inc" data-target="groupFromTolerance">+</button>
+                    </div>
+                    <span class="stepper-unit">秒</span>
+                </div>
+                <div class="stepper-row">
+                    <span class="stepper-label">目标时间接近容差<i class="help-icon" title="多条弹幕指向的目标时间相差在这个范围内，会被归为同一个跳跃目标">?</i></span>
+                    <div class="stepper">
+                        <button class="stepper-btn" data-action="dec" data-target="groupToTolerance">−</button>
+                        <input type="text" id="groupToTolerance" readonly value="5">
+                        <button class="stepper-btn" data-action="inc" data-target="groupToTolerance">+</button>
+                    </div>
+                    <span class="stepper-unit">秒</span>
+                </div>
+                <div class="stepper-row">
+                    <span class="stepper-label">已跳过判定容差<i class="help-icon" title="当前播放时间距离目标时间小于这个值时，认为已经跳过过了，不再重复跳转">?</i></span>
+                    <div class="stepper">
+                        <button class="stepper-btn" data-action="dec" data-target="skippedTolerance">−</button>
+                        <input type="text" id="skippedTolerance" readonly value="2">
+                        <button class="stepper-btn" data-action="inc" data-target="skippedTolerance">+</button>
+                    </div>
+                    <span class="stepper-unit">秒</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 class="section-title">数据管理</h3>
+                <div class="btn-row">
+                    <button class="btn btn-secondary" id="exportBtn">导出配置</button>
+                    <button class="btn btn-secondary" id="importBtn">导入配置</button>
+                    <button class="btn btn-danger" id="resetBtn">恢复默认</button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <span>弹幕设置云端同步 · 连播/跳过仅当前页面生效</span>
+        </footer>
+    </div>
+
+    <!-- 添加规则弹窗 -->
+    <div class="modal-overlay" id="ruleModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">添加规则</h3>
+                <button class="modal-close" id="modalClose">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <label class="form-label">规则名称</label>
+                    <input type="text" class="form-input" id="ruleLabel" placeholder="如：跳伞/跳伞:">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">关键词（逗号分隔）</label>
+                    <input type="text" class="form-input" id="ruleKeywords" placeholder="如：跳伞,跳伞:">
+                </div>
+                <div class="form-row">
+                    <label class="form-label">规则类型</label>
+                    <select class="form-select" id="ruleType">
+                        <option value="time_target">时间目标（如：跳伞01:01）</option>
+                        <option value="click_count">点击次数（如：右点十下）</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-label">关键词方向</label>
+                    <select class="form-select" id="ruleDirection">
+                        <option value="left">关键词在左边（如：跳伞01:01）</option>
+                        <option value="right">关键词在右边（如：01:01跳伞）</option>
+                        <option value="all">两边都可以</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label class="form-checkbox">
+                        <input type="checkbox" id="ruleAllowGap">
+                        <span>允许中间有其他字符</span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalCancel">取消</button>
+                <button class="btn btn-primary" id="modalSave">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
