@@ -1,0 +1,44 @@
+# ============ OS / 系统文件 ============
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+$RECYCLE.BIN/
+
+# ============ 编辑器 / IDE ============
+.idea/
+.vscode/
+*.iml
+*.sublime-*
+
+# ============ 依赖（若后续引入） ============
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ============ 构建 / 产物 ============
+dist/
+build/
+out/
+*.zip
+*.crx
+*.xpi
+*.pem
+
+# ============ 日志 / 环境变量 ============
+*.log
+npm-debug.log*
+.env
+.env.local
+
+# ============ WorkBuddy 元数据 ============
+.workbuddy/
+
+# ============ 图标设计源（若重新生成） ============
+icons/*.psd
+icons/*.ai
+icons/*_source.*
