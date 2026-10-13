@@ -167,19 +167,19 @@
             <div class="section">
                 <h3 class="section-title">跳过参数</h3>
                 <div class="stepper-row">
-                    <span class="stepper-label">跳转起点延后<i class="help-icon" title="实际跳转时间 = 弹幕目标时间 + 该值">?</i></span>
+                    <span class="stepper-label">跳转起点延后<i class="help-icon" title="实际开始跳转时间 = 弹幕出现时间 + 该值（延后触发）">?</i></span>
                     <div class="stepper">
                         <button class="stepper-btn" data-action="dec" data-target="skipMarginStart">−</button>
-                        <input type="text" id="skipMarginStart" readonly value="3">
+                        <input type="text" id="skipMarginStart" readonly value="2">
                         <button class="stepper-btn" data-action="inc" data-target="skipMarginStart">+</button>
                     </div>
                     <span class="stepper-unit">秒</span>
                 </div>
                 <div class="stepper-row">
-                    <span class="stepper-label">跳转终点提前<i class="help-icon" title="实际跳转时间 = 弹幕目标时间 - 该值">?</i></span>
+                    <span class="stepper-label">跳转终点提前<i class="help-icon" title="实际跳转落点 = 弹幕目标时间 - 该值（落点提前）">?</i></span>
                     <div class="stepper">
                         <button class="stepper-btn" data-action="dec" data-target="skipMarginEnd">−</button>
-                        <input type="text" id="skipMarginEnd" readonly value="3">
+                        <input type="text" id="skipMarginEnd" readonly value="2">
                         <button class="stepper-btn" data-action="inc" data-target="skipMarginEnd">+</button>
                     </div>
                     <span class="stepper-unit">秒</span>

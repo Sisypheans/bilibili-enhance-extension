@@ -2,8 +2,8 @@
 const DEFAULT_CONFIG = {
     maxSkipDuration: 130 * 60,
     minSkipDuration: 5,
-    skipMarginStart: 3,
-    skipMarginEnd: 3,
+    skipMarginStart: 2,
+    skipMarginEnd: 2,
     groupFromTolerance: 5,
     groupToTolerance: 5,
     maxDanmakuLength: 20,
@@ -11,12 +11,16 @@ const DEFAULT_CONFIG = {
     notificationDuration: 3000,
     secondsPerRightClick: 5,
     debug: false,
+    configVersion: 1,
     matchRules: [
-        { label: '跳伞/跳伞:', keywords: ['跳伞', '跳伞:'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
+        { label: '跳伞/跳伞:/跳伞至', keywords: ['跳伞', '跳伞:', '跳伞至'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
         { label: '右点/右键/右', keywords: ['右点', '右键', '右'], type: 'click_count', keyword_direction: 'left', allow_gap: false },
-        { label: '空降/空降:', keywords: ['空降:', '空降'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
+        { label: '空降/空降:/空降至', keywords: ['空降:', '空降', '空降至'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
         { label: '绯红之王', keywords: ['绯红之王'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
         { label: '工程', keywords: ['工程'], type: 'time_target', keyword_direction: 'right', allow_gap: true },
+        { label: '国道/省道', keywords: ['国道', '省道'], type: 'time_target', keyword_direction: 'right', allow_gap: false },
+        { label: '空投/空投:/空投至', keywords: ['空投', '空投:', '空投至'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
+        { label: '跳转/跳转:/跳转至', keywords: ['跳转', '跳转:', '跳转至'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
     ],
     danmakuSkipEnabled: true,
     danmakuSkipNotify: true,
@@ -28,26 +32,95 @@ const DEFAULT_CONFIG = {
     skipEndSec: 0,
 };
 
+// 旧版内置规则快照（2.7.0），用于升级时把未改动的规则合并到新默认
+const LEGACY_MATCH_RULES = [
+    { label: '跳伞/跳伞:', keywords: ['跳伞', '跳伞:'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
+    { label: '右点/右键/右', keywords: ['右点', '右键', '右'], type: 'click_count', keyword_direction: 'left', allow_gap: false },
+    { label: '空降/空降:', keywords: ['空降:', '空降'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
+    { label: '绯红之王', keywords: ['绯红之王'], type: 'time_target', keyword_direction: 'left', allow_gap: false },
+    { label: '工程', keywords: ['工程'], type: 'time_target', keyword_direction: 'right', allow_gap: true },
+];
+
+// 旧标签 -> 新标签（2.7.0 中跳伞/空降 的 label 增加了「至」变体）
+const LEGACY_TO_CURRENT = {
+    '跳伞/跳伞:': '跳伞/跳伞:/跳伞至',
+    '右点/右键/右': '右点/右键/右',
+    '空降/空降:': '空降/空降:/空降至',
+    '绯红之王': '绯红之王',
+    '工程': '工程',
+};
+
+const CONFIG_SCHEMA_VERSION = 1;
+
+function sameRule(a, b) {
+    return !!a && !!b &&
+        a.label === b.label && a.type === b.type &&
+        a.keyword_direction === b.keyword_direction && a.allow_gap === b.allow_gap &&
+        JSON.stringify(a.keywords) === JSON.stringify(b.keywords);
+}
+
+// 升级旧配置：补齐新版内置规则、把未自定义的旧规则同步到新默认
+function migrateConfig(items) {
+    items = items || {};
+    if (items.configVersion >= CONFIG_SCHEMA_VERSION) {
+        return { config: items, changed: false };
+    }
+    if (!Array.isArray(items.matchRules) || items.matchRules.length === 0) {
+        // 没有旧规则可合并，交由调用方填充默认
+        return { config: { ...items, configVersion: CONFIG_SCHEMA_VERSION }, changed: true };
+    }
+    const legacyById = new Map(LEGACY_MATCH_RULES.map(r => [r.label, r]));
+    const curById = new Map(DEFAULT_CONFIG.matchRules.map(r => [r.label, r]));
+    const legacyLabelsPresent = new Set(items.matchRules.filter(r => legacyById.has(r.label)).map(r => r.label));
+    let changed = false;
+    const next = items.matchRules.map(r => {
+        const l = legacyById.get(r.label);
+        if (l && sameRule(l, r)) {
+            changed = true;
+            return curById.get(LEGACY_TO_CURRENT[r.label]); // 旧规则同步到新默认
+        }
+        return r;
+    });
+    const labels = new Set(next.map(r => r.label));
+    // 已存在的旧规则（含用户自定义的）对应的新默认规则不再重复追加
+    const reservedNewLabels = new Set([...legacyLabelsPresent].map(l => LEGACY_TO_CURRENT[l]).filter(Boolean));
+    for (const r of DEFAULT_CONFIG.matchRules) {
+        if (!legacyById.has(r.label) && !labels.has(r.label) && !reservedNewLabels.has(r.label)) {
+            next.push(r);
+            changed = true;
+        }
+    }
+    return { config: { ...items, matchRules: next, configVersion: CONFIG_SCHEMA_VERSION }, changed };
+}
+
 let CONFIG = { ...DEFAULT_CONFIG };
 let editingRuleIndex = -1;
 
 // ==================== 存储操作 ====================
-function loadConfig() {
-    return new Promise((resolve) => {
-        chrome.storage.sync.get(null, (items) => {
-            if (chrome.runtime.lastError) {
-                console.warn('读取配置失败，使用默认配置');
-                CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
-            } else {
-                CONFIG = { ...DEFAULT_CONFIG, ...items };
-                if (!items.matchRules || !Array.isArray(items.matchRules) || items.matchRules.length === 0) {
-                    CONFIG.matchRules = JSON.parse(JSON.stringify(DEFAULT_CONFIG.matchRules));
+    function loadConfig() {
+        return new Promise((resolve) => {
+            chrome.storage.sync.get(null, (items) => {
+                if (chrome.runtime.lastError) {
+                    console.warn('读取配置失败，使用默认配置');
+                    CONFIG = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+                } else {
+                    const { config, changed } = migrateConfig(items);
+                    CONFIG = { ...DEFAULT_CONFIG, ...config };
+                    if (!Array.isArray(CONFIG.matchRules) || CONFIG.matchRules.length === 0) {
+                        CONFIG.matchRules = JSON.parse(JSON.stringify(DEFAULT_CONFIG.matchRules));
+                    }
+                    if (changed) {
+                        chrome.storage.sync.set(config, () => {
+                            if (chrome.runtime.lastError) {
+                                console.warn('迁移配置保存失败:', chrome.runtime.lastError.message);
+                            }
+                        });
+                    }
                 }
-            }
-            resolve();
+                resolve();
+            });
         });
-    });
-}
+    }
 
 function saveConfig() {
     chrome.storage.sync.set(CONFIG, () => {
